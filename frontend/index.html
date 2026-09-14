@@ -281,7 +281,7 @@ table.tbl tr.click:hover td{background:#f8fafc}
 <script>
 /* ================= DATA (UltraWell sample) ================= */
 /* ================= API LAYER (Phase 1) ================= */
-const API = "https://careready-api.onrender.com";               // same-origin; set e.g. "https://api.careready..." if hosted separately
+const API = https://careready-api.onrender.com;               // same-origin; set e.g. "https://api.careready..." if hosted separately
 let TOKEN = sessionStorage.getItem("cr_token") || "";
 let DATA = null;
 async function api(path, opts={}){
