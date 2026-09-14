@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<title>CareReady AI — CQC Compliance Intelligence</title>
+<meta name="description" content="CareReady AI — CQC Compliance Intelligence for Supported Living. From evidence to insight. From risk to readiness.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0f1e3d; --navy-2:#16294f; --blue:#2563eb; --blue-2:#1d4ed8; --blue-soft:#eff6ff;
+  --ink:#0f172a; --slate:#475569; --muted:#64748b; --line:#e2e8f0; --bg:#f1f5f9; --card:#ffffff;
+  --green:#16a34a; --green-soft:#f0fdf4; --amber:#d97706; --amber-soft:#fffbeb;
+  --red:#dc2626; --red-soft:#fef2f2; --purple:#7c3aed; --purple-soft:#f5f3ff;
+  --teal:#0d9488; --r:12px; --shadow:0 1px 3px rgba(15,23,42,.08),0 1px 2px rgba(15,23,42,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:15px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--blue);text-decoration:none}
+.app{display:none;min-height:100vh}
+.app.on{display:flex}
+
+/* ---------- Login ---------- */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f1e3d 0%,#16294f 55%,#1d4ed8 130%);padding:24px}
+.login.off{display:none}
+.login-card{background:#fff;border-radius:18px;max-width:420px;width:100%;padding:40px 36px;box-shadow:0 24px 60px rgba(2,8,23,.45)}
+.login-brand{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.login-tag{color:var(--muted);font-size:.82rem;letter-spacing:.14em;font-weight:600;margin:10px 0 26px}
+.login h1{font-size:1.35rem;font-weight:800;margin-bottom:4px}
+.login p.sub{color:var(--muted);font-size:.9rem;margin-bottom:22px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:600;color:var(--slate);margin-bottom:6px}
+.field input{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:.92rem;font-family:inherit}
+.field input:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:var(--blue)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:600;font-size:.92rem;transition:background .15s}
+.btn:hover{background:var(--blue-2)}
+.btn.full{width:100%}
+.btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--blue-soft)}
+.btn.purple{background:var(--purple)}
+.btn.purple:hover{background:#6d28d9}
+.btn.sm{padding:7px 13px;font-size:.83rem;border-radius:8px}
+.demo-note{margin-top:18px;background:var(--blue-soft);border:1px solid #dbeafe;border-radius:10px;padding:12px 14px;font-size:.82rem;color:#1e40af;line-height:1.5}
+.login-foot{margin-top:22px;text-align:center;color:var(--muted);font-size:.78rem}
+
+/* ---------- Shell ---------- */
+.sidebar{width:232px;min-width:232px;background:var(--navy);color:#cbd5e1;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.side-brand{display:flex;align-items:center;gap:10px;padding:18px 16px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.side-brand .bt{line-height:1.15}
+.side-brand .bt b{color:#fff;font-size:.98rem;font-weight:800}
+.side-brand .bt b span{color:#60a5fa}
+.side-brand .bt small{display:block;color:#94a3b8;font-size:.66rem;font-weight:500}
+.nav{padding:10px 8px;flex:1}
+.nav a{display:flex;align-items:center;gap:11px;color:#cbd5e1;padding:9px 12px;border-radius:9px;font-size:.86rem;font-weight:500;margin-bottom:2px}
+.nav a svg{width:17px;height:17px;flex:none;opacity:.85}
+.nav a:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav a.on{background:var(--blue);color:#fff}
+.side-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.08);font-size:.72rem;color:#94a3b8;display:flex;align-items:center;gap:8px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+
+/* ---------- Topbar ---------- */
+.topbar{background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:10px 22px;position:sticky;top:0;z-index:40}
+.org{display:flex;align-items:center;gap:10px}
+.org .grid-ic{color:var(--slate)}
+.org .ot b{font-size:.92rem;font-weight:700;display:block}
+.org .ot small{color:var(--muted);font-size:.72rem}
+.topbar .spacer{flex:1}
+.loc-select{border:1px solid var(--line);border-radius:9px;padding:7px 10px;font-size:.85rem;font-family:inherit;color:var(--ink);background:#fff}
+.bell{position:relative;background:none;border:none;color:var(--slate);padding:6px}
+.bell .dot{position:absolute;top:0;right:-2px;background:var(--red);color:#fff;font-size:.62rem;font-weight:700;border-radius:99px;padding:1px 5px}
+.me{display:flex;align-items:center;gap:9px;cursor:pointer}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.me .mt b{font-size:.83rem;display:block}
+.me .mt small{color:var(--muted);font-size:.7rem}
+
+/* ---------- Content ---------- */
+.content{padding:22px;max-width:1420px;width:100%;margin:0 auto}
+.page{display:none}
+.page.on{display:block}
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+.page-head h1{font-size:1.5rem;font-weight:800;letter-spacing:-.01em}
+.page-head p{color:var(--muted);font-size:.9rem;margin-top:3px}
+.page-head .date{color:var(--muted);font-size:.85rem;text-align:right}
+.page-head .quote{font-style:italic;color:var(--slate);font-size:.82rem;max-width:250px;text-align:right;margin-top:4px}
+
+.grid{display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:18px}
+.card h3{font-size:.95rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card h3 .va{font-size:.8rem;font-weight:600;color:var(--blue);cursor:pointer}
+.badge{display:inline-flex;align-items:center;border-radius:99px;padding:2px 9px;font-size:.72rem;font-weight:700}
+.badge.red{background:var(--red-soft);color:var(--red)}
+.badge.amber{background:var(--amber-soft);color:var(--amber)}
+.badge.green{background:var(--green-soft);color:var(--green)}
+.badge.blue{background:var(--blue-soft);color:var(--blue-2)}
+.badge.purple{background:var(--purple-soft);color:var(--purple)}
+.pill-count{background:var(--red);color:#fff;border-radius:99px;font-size:.7rem;font-weight:700;padding:1px 7px}
+
+/* Donut */
+.donut-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.donut{position:relative;width:150px;height:150px;flex:none}
+.donut svg{transform:rotate(-90deg)}
+.donut .dv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut .dv b{font-size:1.9rem;font-weight:800}
+.donut .dv small{font-size:.62rem;font-weight:800;letter-spacing:.06em;color:var(--green);margin-top:2px}
+
+/* KQ cards */
+.kq-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.kq{border:1px solid var(--line);border-radius:11px;padding:14px 13px;cursor:pointer;transition:box-shadow .15s, transform .15s;background:#fff}
+.kq:hover{box-shadow:0 4px 14px rgba(15,23,42,.1);transform:translateY(-1px)}
+.kq .ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.kq b.nm{display:block;font-size:.85rem}
+.kq .sc{font-size:1.35rem;font-weight:800;margin:2px 0 8px}
+.meter{height:6px;border-radius:99px;background:#e2e8f0;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:99px}
+.kq small.st{display:block;margin-top:8px;font-size:.72rem;font-weight:600}
+
+/* Glance */
+.glance{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.gl{border-radius:11px;padding:14px 12px;text-align:center}
+.gl b{display:block;font-size:1.25rem;font-weight:800}
+.gl small{font-size:.72rem;color:var(--slate);font-weight:600}
+
+/* Risk rows / list rows */
+.rowlist{display:flex;flex-direction:column}
+.rowlist .rw{display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid #f1f5f9;font-size:.84rem}
+.rowlist .rw:last-child{border-bottom:none}
+.rowlist .rw .grow{flex:1;min-width:0}
+.rowlist .rw .tm{color:var(--muted);font-size:.76rem;white-space:nowrap}
+.sevdot{width:8px;height:8px;border-radius:50%;flex:none}
+
+/* Locations */
+.locrow{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px solid #f1f5f9;font-size:.86rem;cursor:pointer}
+.locrow:last-child{border-bottom:none}
+.locrow .nm{flex:1;font-weight:600}
+.locrow .pc{font-weight:700;width:42px;text-align:right}
+.locrow .meter{width:110px}
+.locrow .st{width:70px;text-align:right;font-size:.76rem;font-weight:700}
+
+/* Date chips */
+.datechip{width:40px;flex:none;border:1px solid var(--line);border-radius:9px;text-align:center;padding:4px 0;background:#fff}
+.datechip b{display:block;font-size:.95rem;color:var(--blue-2)}
+.datechip small{font-size:.6rem;color:var(--muted);font-weight:700;letter-spacing:.05em}
+
+/* Promo cards */
+.promo{border-radius:12px;padding:16px}
+.promo.ai{background:linear-gradient(135deg,#f5f3ff,#ede9fe);border:1px solid #ddd6fe}
+.promo h4{font-size:.92rem;font-weight:800;margin-bottom:5px}
+.promo p{font-size:.8rem;color:var(--slate);margin-bottom:12px;line-height:1.45}
+.promo.green-c{background:linear-gradient(160deg,#f0fdf4,#dcfce7);border:1px solid #bbf7d0;text-align:center;padding:26px 18px}
+.promo.green-c h4{font-size:1.05rem}
+
+/* Tables */
+table.tbl{width:100%;border-collapse:collapse;font-size:.85rem}
+table.tbl th{text-align:left;font-size:.72rem;color:var(--muted);font-weight:700;letter-spacing:.03em;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.tbl td{padding:10px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl tr.click{cursor:pointer}
+table.tbl tr.click:hover td{background:#f8fafc}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:16px;flex-wrap:wrap}
+.tabs button{background:none;border:none;padding:9px 13px;font-size:.86rem;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--blue-2);border-color:var(--blue)}
+
+/* Mock inspection */
+.chat{display:flex;flex-direction:column;gap:12px;max-height:460px;overflow-y:auto;padding:4px 2px}
+.msg{max-width:82%;border-radius:14px;padding:11px 14px;font-size:.87rem;line-height:1.5}
+.msg.ai{background:var(--purple-soft);border:1px solid #ddd6fe;align-self:flex-start;border-bottom-left-radius:4px}
+.msg.me{background:var(--blue);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg .who{font-size:.68rem;font-weight:800;letter-spacing:.04em;margin-bottom:4px;color:var(--purple)}
+.chat-input{display:flex;gap:8px;margin-top:12px}
+.chat-input textarea{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:.88rem;resize:none;height:64px}
+.chat-input textarea:focus{outline:2px solid var(--blue)}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-bg.on{display:flex}
+.modal{background:#fff;border-radius:14px;max-width:560px;width:100%;max-height:85vh;overflow-y:auto;padding:24px}
+.modal h3{font-size:1.05rem;font-weight:800;margin-bottom:12px}
+
+.toast{position:fixed;bottom:22px;right:22px;background:var(--navy);color:#fff;border-radius:10px;padding:12px 18px;font-size:.86rem;box-shadow:0 10px 30px rgba(2,8,23,.4);z-index:200;display:none}
+.toast.on{display:block;animation:tin .25s ease}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+.footer{margin-top:auto;background:#fff;border-top:1px solid var(--line);padding:11px 22px;display:flex;align-items:center;justify-content:space-between;font-size:.76rem;color:var(--muted);flex-wrap:wrap;gap:8px}
+
+/* Responsive */
+.menu-btn{display:none;background:none;border:none;color:var(--ink)}
+@media (max-width:1100px){.kq-grid{grid-template-columns:repeat(3,1fr)}.g3,.g2{grid-template-columns:1fr!important}}
+@media (max-width:860px){
+  .sidebar{position:fixed;left:-240px;transition:left .2s;z-index:60}
+  .sidebar.open{left:0}
+  .menu-btn{display:block}
+  .kq-grid{grid-template-columns:repeat(2,1fr)}
+  .glance{grid-template-columns:repeat(2,1fr)}
+  .me .mt{display:none}
+}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<!-- ================= LOGIN ================= -->
+<div class="login" id="login">
+  <div class="login-card">
+    <div class="login-brand">
+      <svg width="42" height="42" viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#eff6ff"/><path d="M24 6a18 18 0 100 36V6z" fill="#1d4ed8"/><path d="M24 6a18 18 0 010 36c-5-4-8-10-8-18s3-14 8-18z" fill="#60a5fa"/><circle cx="17" cy="31" r="6" fill="#0f1e3d"/></svg>
+      <div>
+        <div style="font-weight:800;font-size:1.25rem">CareReady <span style="color:#2563eb">AI</span></div>
+        <div style="font-size:.78rem;color:#475569;font-weight:600">CQC Compliance Intelligence</div>
+      </div>
+    </div>
+    <div class="login-tag">SAFE PEOPLE &nbsp;•&nbsp; BRIGHTER FUTURES</div>
+    <h1>Sign in</h1>
+    <p class="sub">From evidence to insight. From risk to readiness.</p>
+    <div class="field"><label for="lemail">Email</label><input id="lemail" type="email" value="kunle.adeyemi@ultrawell.co.uk"></div>
+    <div class="field"><label for="lpass">Password</label><input id="lpass" type="password" value="demo1234"></div>
+    <button class="btn full" onclick="doLogin()">Sign in to CareReady AI</button>
+    <div class="demo-note"><b>Phase 1 demo</b> — real authentication against the CareReady API, live readiness scoring from the database. Demo account: Kunle Adeyemi (Registered Manager), password demo1234.</div>
+    <div class="login-foot">CareReady AI v1.0 (POC) &nbsp;·&nbsp; Powered by Omfys Technologies</div>
+  </div>
+</div>
+
+<!-- ================= APP ================= -->
+<div class="app" id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="side-brand">
+      <svg width="34" height="34" viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="#16294f"/><path d="M24 6a18 18 0 100 36V6z" fill="#3b82f6"/><path d="M24 6a18 18 0 010 36c-5-4-8-10-8-18s3-14 8-18z" fill="#93c5fd"/><circle cx="17" cy="31" r="6" fill="#0f1e3d"/></svg>
+      <div class="bt"><b>CareReady <span>AI</span></b><small>CQC Compliance Intelligence</small></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/></svg>
+      <span><b style="color:#e2e8f0">Omfys Technologies</b><br>Technology for a kinder world</span>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')" aria-label="Menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+      <div class="org">
+        <svg class="grid-ic" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <div class="ot"><b>UltraWell Supported Living</b><small>Safe People &nbsp;•&nbsp; Brighter Futures</small></div>
+      </div>
+      <div class="spacer"></div>
+      <select class="loc-select" id="locSelect" onchange="setLocation(this.value)">
+        <option value="all">All Locations</option>
+        <option>Mitcham House</option><option>Croydon House</option><option>Sutton House</option><option>Purley House</option>
+      </select>
+      <button class="bell" onclick="go('alerts')" aria-label="Alerts">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+        <span class="dot">3</span>
+      </button>
+      <div class="me" onclick="go('settings')">
+        <div class="avatar">KA</div>
+        <div class="mt"><b>Kunle Adeyemi</b><small>Registered Manager</small></div>
+      </div>
+    </header>
+
+    <div class="content" id="content"></div>
+
+    <footer class="footer">
+      <span><b style="color:#0f172a">CareReady AI</b> &nbsp;v1.0 (Beta)</span>
+      <span>CQC Compliance Intelligence for Supported Living</span>
+      <span>Privacy &nbsp;|&nbsp; Terms &nbsp;|&nbsp; Help</span>
+    </footer>
+  </div>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalBox"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+/* ================= DATA (UltraWell sample) ================= */
+/* ================= API LAYER (Phase 1) ================= */
+const API = "";               // same-origin; set e.g. "https://api.careready..." if hosted separately
+let TOKEN = sessionStorage.getItem("cr_token") || "";
+let DATA = null;
+async function api(path, opts={}){
+  const headers = Object.assign({"Authorization":"Bearer "+TOKEN}, opts.headers||{});
+  if(opts.json){ headers["Content-Type"]="application/json"; opts.body=JSON.stringify(opts.json); }
+  const r = await fetch(API+path, Object.assign({}, opts, {headers}));
+  if(r.status===401){ logout(); throw new Error("Session expired — please sign in again."); }
+  if(!r.ok){ let d=null; try{d=await r.json()}catch(e){}; throw new Error((d&&d.detail)||("Request failed ("+r.status+")")); }
+  return r.json();
+}
+async function loadData(){ DATA = await api("/api/bootstrap"); DATA.kqDetail = KQDETAIL; }
+
+const KQDETAIL = {
+    safe:{summary:"Safeguarding systems are established but staff-vetting currency and premises risk assessments need attention before inspection.",
+      strengths:["Safeguarding policy v4 in place, all staff acknowledged","Incident reporting culture is active with learning capture","Medication SOP current and audited in the last 30 days"],
+      gaps:["2 staff DBS records require review (High)","1 safeguarding refresher overdue","Fire risk assessment expiring in 18 days","Infection control audit evidence missing"]},
+    effective:{summary:"Training compliance is strong overall; supervision cadence and induction records support effective care delivery.",
+      strengths:["Overall training compliance at 87% across locations","Induction framework mapped to Care Certificate","Nutrition and health-outcome monitoring in place"],
+      gaps:["2 staff below 75% training completion","4 certifications expiring within 4 days"]},
+    caring:{summary:"Strongest key question. Person-centred planning and feedback loops evidence a caring culture.",
+      strengths:["Service user feedback survey completed with 92% positive","Care plans are person-centred and co-produced","Dignity and privacy audits current"],
+      gaps:["Capture more evidence of advocacy involvement"]},
+    responsive:{summary:"Care planning is generally current; one overdue review and complaint-response times need monitoring.",
+      strengths:["5 of 6 care plans current or scheduled","Complaints log maintained with outcomes recorded"],
+      gaps:["Service User JM care-plan review overdue by 6 days","2 care plan reviews due within 3 weeks"]},
+    wellled:{summary:"Weakest key question. Governance evidence, audit closure and supervision gaps are dragging readiness — priority focus area.",
+      strengths:["Compliance calendar and action tracking now operational","Monthly quality report produced"],
+      gaps:["Supervision matrix shows 3 gaps","Q3 team meeting minutes not yet uploaded","CAPA from medication audit still open","Board-level oversight evidence thin for last quarter"]}
+  };
+
+
+const KQICON = {
+  shield:'<path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"/>',
+  bars:'<path d="M5 20V12M12 20V6M19 20V9"/>',
+  heart:'<path d="M12 20s-7-4.5-9-9a5 5 0 019-3 5 5 0 019 3c-2 4.5-9 9-9 9z"/>',
+  people:'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 15c2.8.2 5 1.9 5 4.5"/>',
+  cog:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/>'
+};
+function kqSvg(icon,color){return `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${KQICON[icon]}</svg>`}
+function barColor(v){return v>=85?'#16a34a':v>=75?'#d97706':'#dc2626'}
+function esc(s){return s.replace(/</g,'&lt;')}
+
+/* ================= NAV ================= */
+const NAV = [
+  ["dashboard","Dashboard",'<path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9z"/>'],
+  ["readiness","CQC Readiness",'<path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/>'],
+  ["people","People We Support",'<circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/>'],
+  ["staff","Staff",'<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16 15c2.8.2 5 1.9 5 4.5"/>'],
+  ["incidents","Incidents & Safeguarding",'<path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4M12 17.5v.5"/>'],
+  ["actions","Compliance Actions",'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'],
+  ["mock","Mock CQC Inspection",'<circle cx="11" cy="11" r="6"/><path d="M20 20l-4.2-4.2"/>'],
+  ["evidence","Evidence Library",'<path d="M4 5a2 2 0 012-2h7l7 7v9a2 2 0 01-2 2H6a2 2 0 01-2-2V5z"/><path d="M13 3v6h6"/>'],
+  ["reports","Reports",'<path d="M4 20V9M10 20V4M16 20v-8M21 20H3"/>'],
+  ["settings","Settings",'<circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 00-2-1.2L14.2 3h-4l-.4 2.5a7 7 0 00-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 002 1.2l.4 2.7h4l.4-2.7a7 7 0 002-1.2l2.3 1 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/>']
+];
+function buildNav(){
+  document.getElementById('nav').innerHTML = NAV.map(([id,label,ic])=>
+    `<a href="#${id}" data-p="${id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>${label}</a>`).join('');
+}
+
+/* ================= HELPERS ================= */
+let currentLoc = "all";
+function setLocation(v){currentLoc=v; render(location.hash.replace('#','')||'dashboard'); toast(v==='all'?'Showing all locations':'Filtered to '+v);}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove('on'),2600);}
+function openModal(html){document.getElementById('modalBox').innerHTML=html;document.getElementById('modalBg').classList.add('on');}
+function closeModal(){document.getElementById('modalBg').classList.remove('on');}
+function todayStr(){return new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+function donut(v,size=150,stroke=14,color='#16a34a'){
+  const r=(size-stroke)/2, c=2*Math.PI*r, off=c*(1-v/100);
+  return `<svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#e2e8f0" stroke-width="${stroke}"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"/></svg>`;
+}
+function trendSvg(){
+  const W=520,H=170,P=30,d=DATA.trend,max=100;
+  const x=i=>P+i*( (W-2*P)/(d.length-1) ), y=v=>H-P-(v/max)*(H-2*P);
+  let pts=d.map((p,i)=>`${x(i)},${y(p.v)}`).join(' ');
+  let area=`M${x(0)},${H-P} L`+pts.replace(/ /g,' L ')+` L${x(d.length-1)},${H-P} Z`;
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+    ${[0,25,50,75,100].map(g=>`<line x1="${P}" x2="${W-P}" y1="${y(g)}" y2="${y(g)}" stroke="#f1f5f9"/><text x="${P-8}" y="${y(g)+4}" font-size="10" fill="#94a3b8" text-anchor="end">${g}</text>`).join('')}
+    <path d="${area}" fill="rgba(22,163,74,.12)"/>
+    <polyline points="${pts}" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linejoin="round"/>
+    ${d.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.v)}" r="4" fill="#16a34a"/><text x="${x(i)}" y="${y(p.v)-10}" font-size="10.5" font-weight="700" fill="#334155" text-anchor="middle">${p.v}%</text><text x="${x(i)}" y="${H-P+16}" font-size="10.5" fill="#64748b" text-anchor="middle">${p.m}</text>`).join('')}
+  </svg>`;
+}
+function meter(v,w=''){return `<div class="meter" ${w?`style="width:${w}"`:''}><i style="width:${v}%;background:${barColor(v)}"></i></div>`}
+function stBadge(txt,c){return `<span class="badge ${c}">${txt}</span>`}
+
+/* ================= PAGE RENDERERS ================= */
+const PAGES = {};
+
+PAGES.dashboard = () => {
+  const g=DATA.glance;
+  return `
+  <div class="page-head">
+    <div><h1>Welcome back, ${DATA.user.name.split(' ')[0]}</h1><p>Here's your CQC compliance readiness overview for today.</p></div>
+    <div><div class="date">${todayStr()}</div><div class="quote">“Good care is not just what we do, but how we prove it.”</div></div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:minmax(300px,420px) 1fr" id="rowTop">
+    <div class="card">
+      <h3>Overall CQC Readiness <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v.5M12 11v5"/></svg></h3>
+      <div class="donut-wrap">
+        <div class="donut">${donut(DATA.overall)}<div class="dv"><b>${DATA.overall}%</b><small>GOOD READINESS</small></div></div>
+        <div style="flex:1;min-width:170px">
+          <p style="font-size:.87rem;color:var(--slate);line-height:1.55;margin-bottom:14px">Your organisation is generally ready for CQC inspection, with some areas requiring attention.</p>
+          <button class="btn sm" onclick="go('readiness')">View CQC Readiness
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Readiness by CQC Key Question</h3>
+      <div class="kq-grid">${DATA.kq.map(k=>`
+        <div class="kq" onclick="go('readiness','${k.id}')" role="button" tabindex="0">
+          <div class="ic" style="background:${k.bg}">${kqSvg(k.icon,k.color)}</div>
+          <b class="nm">${k.name}</b>
+          <div class="sc">${k.score}%</div>
+          ${meter(k.score)}
+          <small class="st" style="color:${k.color}">${k.status}</small>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 1.2fr 1fr;margin-top:16px" >
+    <div class="card">
+      <h3>Compliance at a Glance</h3>
+      <div class="glance">
+        <div class="gl" style="background:var(--blue-soft)"><b style="color:var(--blue-2)">${g.present} / ${g.items}</b><small>Evidence items</small></div>
+        <div class="gl" style="background:var(--green-soft)"><b style="color:var(--green)">${g.current}</b><small>Current</small></div>
+        <div class="gl" style="background:var(--red-soft)"><b style="color:var(--red)">${g.expired}</b><small>Expired</small></div>
+        <div class="gl" style="background:var(--amber-soft)"><b style="color:var(--amber)">${g.missing}</b><small>Missing</small></div>
+      </div>
+      <div style="margin-top:18px"><h3 style="margin-bottom:10px">Readiness Trend (Last 6 Months)</h3>${trendSvg()}</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card">
+        <h3>Critical Compliance Risks <span style="display:flex;gap:10px;align-items:center"><span class="pill-count">${DATA.risks.length}</span><span class="va" onclick="go('actions')">View all</span></span></h3>
+        <div class="rowlist">${DATA.risks.map(r=>`
+          <div class="rw"><span class="sevdot" style="background:${r.c==='red'?'#dc2626':'#d97706'}"></span>
+            <span class="grow">${r.t}</span>${stBadge(r.sev,r.c)}<span class="tm">${r.when}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <h3>Readiness by Location <span class="va" onclick="go('readiness','loc')">View all</span></h3>
+        ${DATA.locations.map(l=>`
+          <div class="locrow" onclick="locModal('${l.name}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9z"/></svg>
+            <span class="nm">${l.name}</span><span class="pc">${l.score}%</span>${meter(l.score,'110px')}
+            <span class="st" style="color:${l.c==='green'?'var(--green)':l.c==='amber'?'var(--amber)':'var(--red)'}">${l.st}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card">
+        <h3>Upcoming Compliance Activities <span class="va" onclick="go('actions')">View all</span></h3>
+        <div class="rowlist">${DATA.upcoming.map(u=>`
+          <div class="rw"><div class="datechip"><b>${u.d}</b><small>${u.m}</small></div><span class="grow">${u.t}</span><span class="tm">${u.when}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="promo ai">
+        <h4 style="color:var(--purple)">✦ Run a Mock CQC Inspection</h4>
+        <p>Test your readiness with AI-powered questions based on the CQC framework.</p>
+        <button class="btn sm purple" onclick="go('mock')">Start Mock Inspection →</button>
+      </div>
+      <div class="card" style="padding:15px">
+        <h4 style="font-size:.9rem;font-weight:800;margin-bottom:4px">📄 Inspection Ready</h4>
+        <p style="font-size:.8rem;color:var(--slate);margin-bottom:10px">Generate your CQC evidence pack with one click.</p>
+        <button class="btn sm ghost" onclick="evidencePack()">Prepare Evidence Pack →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr;margin-top:16px">
+    <div class="card">
+      <h3>Recent Activity <span class="va">View all</span></h3>
+      <div class="rowlist">${DATA.activity.map(a=>`
+        <div class="rw"><span class="sevdot" style="background:${a.c==='green'?'#16a34a':a.c==='blue'?'#2563eb':'#dc2626'}"></span><span class="grow">${a.t}</span><span class="tm">${a.when}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <h3>Messages & Alerts <span style="display:flex;gap:10px;align-items:center"><span class="pill-count">3</span><span class="va" onclick="go('alerts')">View all</span></span></h3>
+      <div class="rowlist">${DATA.alerts.map(a=>`
+        <div class="rw"><span class="sevdot" style="background:${a.c==='red'?'#dc2626':a.c==='amber'?'#d97706':'#2563eb'}"></span><span class="grow">${a.t}</span><span class="tm">${a.when}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="promo green-c">
+      <div style="font-size:1.6rem;margin-bottom:8px">💚</div>
+      <h4>Compliance today.<br>Better lives tomorrow.</h4>
+      <p style="margin-top:8px">CareReady AI helps you deliver safe, high-quality care and be ready to demonstrate it at any time.</p>
+      <small style="color:var(--muted)">Powered by Omfys Technologies</small>
+    </div>
+  </div>`;
+};
+
+PAGES.readiness = (sub) => {
+  const kqTabs = DATA.kq.map(k=>`<button class="${sub===k.id?'on':''}" onclick="go('readiness','${k.id}')">${k.name} ${k.score}%</button>`).join('');
+  let body='';
+  if(sub && KQDETAIL[sub]){
+    const k=DATA.kq.find(x=>x.id===sub), d=KQDETAIL[sub];
+    body=`<div class="grid" style="grid-template-columns:1fr 1fr" >
+      <div class="card">
+        <h3><span style="display:flex;align-items:center;gap:8px"><span class="ic" style="width:30px;height:30px;border-radius:8px;background:${k.bg};display:inline-flex;align-items:center;justify-content:center">${kqSvg(k.icon,k.color)}</span>${k.name} — ${k.score}% ${stBadge(k.status,k.cls)}</span></h3>
+        <p style="font-size:.88rem;color:var(--slate);line-height:1.6;margin-bottom:16px">${d.summary}</p>
+        ${meter(k.score)}
+        <div style="margin-top:18px">
+          <b style="font-size:.85rem;color:var(--green)">✓ What's working</b>
+          <ul style="margin:8px 0 0 18px;font-size:.85rem;color:var(--slate);line-height:1.9">${d.strengths.map(s=>`<li>${s}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Gaps to close before inspection</h3>
+        <div class="rowlist">${d.gaps.map(g=>`<div class="rw"><span class="sevdot" style="background:#dc2626"></span><span class="grow">${g}</span><button class="btn sm ghost" onclick="toast('Added to Compliance Actions')">Create action</button></div>`).join('')}</div>
+        <div class="promo ai" style="margin-top:16px">
+          <h4 style="color:var(--purple)">✦ AI recommendation</h4>
+          <p>${sub==='wellled'?'Prioritise governance evidence this fortnight: close the open CAPA, upload Q3 minutes and clear the 3 supervision gaps to lift Well-led above 75%.':sub==='safe'?'Clearing the 2 DBS reviews and the overdue safeguarding refresher would lift Safe to an estimated 83% within one week.':'Maintain current cadence and schedule the flagged reviews to protect this rating through the next quarter.'}</p>
+          <button class="btn sm purple" onclick="go('mock')">Test with Mock Inspection →</button>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    body=`<div>
+      <div class="kq-grid" style="grid-column:1/-1">${DATA.kq.map(k=>`
+        <div class="kq" onclick="go('readiness','${k.id}')"><div class="ic" style="background:${k.bg}">${kqSvg(k.icon,k.color)}</div>
+        <b class="nm">${k.name}</b><div class="sc">${k.score}%</div>${meter(k.score)}<small class="st" style="color:${k.color}">${k.status}</small></div>`).join('')}
+      </div></div>
+    <div class="grid" style="grid-template-columns:1.3fr 1fr;margin-top:16px">
+      <div class="card"><h3>Readiness by Location</h3>
+        ${DATA.locations.map(l=>`<div class="locrow" onclick="locModal('${l.name}')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1v-9z"/></svg>
+          <span class="nm">${l.name} <small style="color:var(--muted);font-weight:500">· ${l.users} people · ${l.staff} staff</small></span>
+          <span class="pc">${l.score}%</span>${meter(l.score,'110px')}
+          <span class="st" style="color:${l.c==='green'?'var(--green)':l.c==='amber'?'var(--amber)':'var(--red)'}">${l.st}</span></div>`).join('')}
+      </div>
+      <div class="card"><h3>How your score is calculated</h3>
+        <p style="font-size:.85rem;color:var(--slate);line-height:1.65">CareReady AI scores each CQC key question from the evidence library, staff compliance records, incidents, audits and actions — weighted by the CQC single assessment framework quality statements. Scores update in real time as evidence is added, expires or is flagged.</p>
+        <div style="margin-top:14px" class="rowlist">
+          <div class="rw"><span class="grow">Evidence currency & coverage</span><b>40%</b></div>
+          <div class="rw"><span class="grow">Staff compliance (DBS, training, supervision)</span><b>25%</b></div>
+          <div class="rw"><span class="grow">Incidents, safeguarding & learning</span><b>15%</b></div>
+          <div class="rw"><span class="grow">Audits & open actions (CAPA)</span><b>20%</b></div>
+        </div>
+      </div>
+    </div>`;
+  }
+  return `<div class="page-head"><div><h1>CQC Readiness</h1><p>Five key questions · CQC single assessment framework</p></div>
+    <button class="btn sm" onclick="evidencePack()">Prepare Evidence Pack →</button></div>
+  <div class="tabs"><button class="${!sub||sub==='loc'?'on':''}" onclick="go('readiness')">Overview</button>${kqTabs}</div>${body}`;
+};
+
+function filterLoc(arr){ return currentLoc==='all'?arr:arr.filter(x=>x.loc===currentLoc); }
+
+PAGES.people = () => {
+  const rows = filterLoc(DATA.people);
+  return `<div class="page-head"><div><h1>People We Support</h1><p>Care plans, risk assessments and reviews${currentLoc!=='all'?' — '+currentLoc:''}</p></div>
+    <button class="btn sm" onclick="toast('Add person — available in Phase 1')">+ Add person</button></div>
+  <div class="card"><table class="tbl"><thead><tr><th>Person</th><th>Location</th><th>Care plan</th><th>Risk assessment</th><th>Status</th></tr></thead><tbody>
+  ${rows.map(p=>`<tr class="click" onclick="personModal('${p.id}')">
+    <td><div style="display:flex;align-items:center;gap:10px"><div class="avatar" style="width:30px;height:30px;font-size:.72rem;background:linear-gradient(135deg,#0d9488,#2563eb)">${p.id}</div><b>${p.name}</b></div></td>
+    <td>${p.loc}</td><td>${p.careplan}</td><td>${p.risk}</td>
+    <td>${stBadge(p.st==='green'?'Compliant':p.st==='amber'?'Due soon':'Overdue',p.st)}</td></tr>`).join('')}
+  </tbody></table></div>`;
+};
+
+PAGES.staff = () => {
+  const rows = filterLoc(DATA.staff);
+  const dbsIssues = rows.filter(s=>s.dbs!=='Current').length;
+  return `<div class="page-head"><div><h1>Staff</h1><p>DBS, training, supervision and records${currentLoc!=='all'?' — '+currentLoc:''}</p></div>
+    <button class="btn sm" onclick="toast('Add staff member — available in Phase 1')">+ Add staff</button></div>
+  <div class="glance" style="margin-bottom:16px;grid-template-columns:repeat(4,1fr)">
+    <div class="card gl" style="text-align:center"><b>${rows.length}</b><small>Staff in view</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:${dbsIssues?'var(--red)':'var(--green)'}">${dbsIssues}</b><small>DBS need review</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:var(--amber)">4</b><small>Certs expiring ≤ 4 days</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:var(--blue-2)">${Math.round(rows.reduce((a,s)=>a+s.training,0)/rows.length)}%</b><small>Avg training compliance</small></div>
+  </div>
+  <div class="card"><table class="tbl"><thead><tr><th>Name</th><th>Role</th><th>Location</th><th>DBS</th><th>Training</th><th>Supervision</th></tr></thead><tbody>
+  ${rows.map(s=>`<tr class="click" onclick="toast('Staff record view — Phase 1')">
+    <td><b>${s.name}</b></td><td>${s.role}</td><td>${s.loc}</td>
+    <td>${stBadge(s.dbs, s.dbs==='Current'?'green':'red')}</td>
+    <td><div style="display:flex;align-items:center;gap:8px">${meter(s.training,'70px')}<span style="font-weight:700;font-size:.8rem">${s.training}%</span></div></td>
+    <td>${stBadge(s.supervision, s.supervision.includes('Up')?'green':s.supervision.includes('Overdue')||s.supervision.includes('today')?'red':'amber')}</td></tr>`).join('')}
+  </tbody></table></div>`;
+};
+
+PAGES.incidents = () => {
+  const rows = filterLoc(DATA.incidents);
+  return `<div class="page-head"><div><h1>Incidents & Safeguarding</h1><p>Recording, investigation and learning capture</p></div>
+    <button class="btn sm" onclick="toast('Report incident — available in Phase 1')">+ Report incident</button></div>
+  <div class="glance" style="margin-bottom:16px;grid-template-columns:repeat(4,1fr)">
+    <div class="card gl" style="text-align:center"><b>${rows.length}</b><small>Last 30 days</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:var(--red)">${rows.filter(i=>i.st==='Open').length}</b><small>Open</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:var(--blue-2)">${rows.filter(i=>i.st==='Under review').length}</b><small>Under review</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:var(--green)">${rows.filter(i=>i.st==='Closed').length}</b><small>Closed with learning</small></div>
+  </div>
+  <div class="card"><table class="tbl"><thead><tr><th>Ref</th><th>Incident</th><th>Location</th><th>Severity</th><th>Date</th><th>Status</th></tr></thead><tbody>
+  ${rows.map(i=>`<tr class="click" onclick="toast('${i.id} detail — Phase 1')">
+    <td><b>${i.id}</b></td><td>${i.t}</td><td>${i.loc}</td>
+    <td>${stBadge(i.sev, i.sev==='High'?'red':i.sev==='Medium'?'amber':'blue')}</td>
+    <td>${i.date}</td><td>${stBadge(i.st, i.c)}</td></tr>`).join('')}
+  </tbody></table>
+  <div class="promo ai" style="margin-top:16px"><h4 style="color:var(--purple)">✦ AI pattern insight</h4>
+  <p>Sutton House accounts for 2 of the last 5 incidents including one medication delay. Combined with its 69% readiness, consider a focused medication-round audit and staffing-pattern review this week.</p></div></div>`;
+};
+
+PAGES.actions = () => {
+  return `<div class="page-head"><div><h1>Compliance Actions</h1><p>Task management and CAPA tracking</p></div>
+    <button class="btn sm" onclick="toast('New action — available in Phase 1')">+ New action</button></div>
+  <div class="card"><table class="tbl"><thead><tr><th>Ref</th><th>Action</th><th>Owner</th><th>Due</th><th>Priority</th><th>Status</th></tr></thead><tbody>
+  ${DATA.actions.map(a=>`<tr class="click" onclick="actionModal(${a.dbid},'${a.id}')">
+    <td><b>${a.id}</b></td><td>${a.t}</td><td>${a.owner}</td><td>${a.due}</td>
+    <td>${stBadge(a.pr, a.pr==='High'?'red':a.pr==='Medium'?'amber':'blue')}</td>
+    <td>${stBadge(a.st, a.st==='In progress'?'blue':a.st==='Scheduled'?'amber':a.st==='Not started'?'red':'green')}</td></tr>`).join('')}
+  </tbody></table></div>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:16px">
+    <div class="card"><h3>Compliance Calendar — next 14 days</h3>
+      <div class="rowlist">${DATA.upcoming.map(u=>`<div class="rw"><div class="datechip"><b>${u.d}</b><small>${u.m}</small></div><span class="grow">${u.t}</span><span class="tm">${u.when}</span></div>`).join('')}</div></div>
+    <div class="promo ai"><h4 style="color:var(--purple)">✦ AI prioritisation</h4>
+      <p>Three high-priority actions are due today and all sit under the Safe and Well-led key questions — your two lowest scores. Closing CA-217, CA-216 and CA-215 is estimated to lift overall readiness from 82% to ~86%.</p></div>
+  </div>`;
+};
+
+PAGES.evidence = () => {
+  return `<div class="page-head"><div><h1>Evidence Library</h1><p>Upload, classify and track document expiry — mapped to CQC quality statements</p></div>
+    <div style="display:flex;gap:8px"><button class="btn sm ghost" onclick="toast('CSV import — available in Phase 1')">Import CSV</button>
+    <button class="btn sm" onclick="document.getElementById('upl').click()">⇧ Upload document</button><input type="file" id="upl" style="display:none" onchange="uploadEvidence(this)"></div></div>
+  <div class="glance" style="margin-bottom:16px;grid-template-columns:repeat(4,1fr)">
+    <div class="card gl" style="text-align:center"><b style="color:var(--blue-2)">${DATA.glance.present} / ${DATA.glance.items}</b><small>Evidence items</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:var(--green)">${DATA.glance.current}</b><small>Current</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:var(--red)">${DATA.glance.expired}</b><small>Expired</small></div>
+    <div class="card gl" style="text-align:center"><b style="color:var(--amber)">${DATA.glance.missing}</b><small>Missing</small></div>
+  </div>
+  <div class="card"><table class="tbl"><thead><tr><th>Document</th><th>Category</th><th>Key question</th><th>Expiry</th><th>Status</th><th></th></tr></thead><tbody>
+  ${DATA.evidence.map(e=>`<tr class="click" onclick="toast('Version history & preview — Phase 1')">
+    <td><b>${e.t}</b></td><td>${e.cat}</td><td>${stBadge(e.kq,'blue')}</td><td>${e.exp}</td>
+    <td>${stBadge(e.st,e.c)}</td>
+    <td style="text-align:right"><span class="va">Open</span></td></tr>`).join('')}
+  </tbody></table></div>`;
+};
+
+PAGES.reports = () => {
+  return `<div class="page-head"><div><h1>Reports & Analytics</h1><p>Readiness trends and insights</p></div>
+    <div style="display:flex;gap:8px"><button class="btn sm ghost" onclick="toast('Exported to Excel (demo)')">Export Excel</button>
+    <button class="btn sm" onclick="toast('Exported to PDF (demo)')">Export PDF</button></div></div>
+  <div class="grid" style="grid-template-columns:1.3fr 1fr">
+    <div class="card"><h3>Readiness Trend (Last 6 Months)</h3>${trendSvg()}
+      <p style="font-size:.83rem;color:var(--slate);margin-top:10px">Overall readiness has climbed 20 points since April, driven by evidence library completion and DBS renewals. Well-led remains the constraint on further gains.</p></div>
+    <div class="card"><h3>Readiness by Key Question</h3>
+      ${DATA.kq.map(k=>`<div class="locrow" style="cursor:default"><span class="nm">${k.name}</span><span class="pc">${k.score}%</span>${meter(k.score,'130px')}</div>`).join('')}
+      <h3 style="margin-top:18px">By Location</h3>
+      ${DATA.locations.map(l=>`<div class="locrow" style="cursor:default"><span class="nm">${l.name}</span><span class="pc">${l.score}%</span>${meter(l.score,'130px')}</div>`).join('')}
+    </div>
+  </div>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:16px">
+    <div class="card"><h3>Monthly compliance report — August 2026</h3>
+      <p style="font-size:.85rem;color:var(--slate);line-height:1.6">Auto-generated summary covering evidence currency, staff compliance, incidents with learning outcomes, audit closures and readiness movement — formatted for board and commissioner review.</p>
+      <button class="btn sm ghost" style="margin-top:12px" onclick="toast('Report download (demo)')">Download report</button></div>
+    <div class="promo ai"><h4 style="color:var(--purple)">✦ AI insight of the month</h4>
+      <p>Locations with weekly evidence uploads (Mitcham, Purley) hold readiness above 85%. Sutton House uploads fortnightly and trails at 69% — cadence, not volume, is the strongest predictor in your data.</p></div>
+  </div>`;
+};
+
+PAGES.alerts = () => {
+  return `<div class="page-head"><div><h1>Messages & Alerts</h1><p>Notifications, reminders and CQC updates</p></div></div>
+  <div class="card"><div class="rowlist">${DATA.alerts.map(a=>`
+    <div class="rw" style="padding:13px 2px"><span class="sevdot" style="background:${a.c==='red'?'#dc2626':a.c==='amber'?'#d97706':'#2563eb'}"></span>
+    <span class="grow"><b>${a.t}</b></span><span class="tm">${a.when}</span>
+    <button class="btn sm ghost" onclick="markRead(${a.id})" ${a.read?'disabled':''}>${a.read?'Read':'Mark read'}</button></div>`).join('')}</div></div>`;
+};
+
+PAGES.settings = () => {
+  const roles=[["Super Admin","Full access, configuration, user management"],["Registered Manager","Organisation view, all modules, approve actions"],["Compliance Lead","Evidence, audits, reports, actions"],["Operations Manager","Location view, incidents, actions"],["HR / Training Lead","Staff records, training, DBS"],["Support Coordinator","Service user records, care plans, incidents"],["Viewer","Read-only access (executive)"]];
+  return `<div class="page-head"><div><h1>Settings & Configuration</h1><p>Organisation setup, users and evidence library structure</p></div></div>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+    <div class="card"><h3>Organisation</h3>
+      <div class="rowlist">
+        <div class="rw"><span class="grow">Organisation</span><b>UltraWell Supported Living</b></div>
+        <div class="rw"><span class="grow">Signed in as</span><b>Kunle Adeyemi — Registered Manager</b></div>
+        <div class="rw"><span class="grow">Locations</span><b>4 (Mitcham, Croydon, Sutton, Purley)</b></div>
+        <div class="rw"><span class="grow">Plan</span>${stBadge(DATA.plan||'Phase 1','purple')}</div>
+        <div class="rw"><span class="grow">Data sources</span><b>Live database · Document upload · AI services</b></div>
+      </div>
+      <button class="btn sm ghost" style="margin-top:14px" onclick="logout()">Sign out</button></div>
+    <div class="card"><h3>User Roles & Permissions</h3>
+      <table class="tbl"><thead><tr><th>Role</th><th>Key permissions</th></tr></thead><tbody>
+      ${roles.map(r=>`<tr><td><b>${r[0]}</b></td><td style="color:var(--slate)">${r[1]}</td></tr>`).join('')}</tbody></table></div>
+  </div>`;
+};
+
+/* ================= MOCK CQC INSPECTION ================= */
+const MOCKQ = {
+  safe:[
+    {q:"How do you ensure all staff have current DBS checks, and what happens when a check flags an issue or requires renewal?", keys:["dbs","renew","risk assessment","register","check"], model:"A strong answer covers: a live DBS register with renewal dates, a defined escalation route when checks lapse or flag concerns, interim risk assessments, and evidence the Registered Manager reviews the register monthly."},
+    {q:"Walk me through what happens when a safeguarding concern is raised about a person you support.", keys:["safeguard","refer","local authority","record","investigat","learn"], model:"Inspectors expect: immediate protection steps, referral to the local authority safeguarding team, notification to CQC where required, a recorded investigation, and evidence of learning shared with the team."},
+    {q:"How do you manage medication errors, and can you show me your last three medication audits?", keys:["audit","error","report","mar","competen","learn"], model:"Cover: incident reporting for every error, MAR chart audits, staff competency reassessment after errors, and trend analysis with actions — with audit records available in your evidence library."}
+  ],
+  effective:[
+    {q:"How do you make sure staff have the right skills and training for the people they support?", keys:["training","induction","care certificate","competen","supervis","matrix"], model:"Reference your training matrix, Care Certificate-aligned induction, role-specific competencies, refresher schedules, and how supervision checks skills in practice."},
+    {q:"How do you monitor whether the support you provide is actually achieving good outcomes?", keys:["outcome","goal","review","measure","feedback"], model:"Show outcome-focused support plans with measurable goals, regular reviews with the person, and how outcome data feeds your quality reporting."}
+  ],
+  caring:[
+    {q:"How do you involve the people you support in decisions about their own care?", keys:["involve","choice","co-produc","advoca","consent","person-centred"], model:"Evidence co-produced care plans, capacity and consent records, advocacy access, and examples where a person's preference changed their support."},
+    {q:"Give me an example of how you protect people's dignity and privacy in day-to-day support.", keys:["dignity","privacy","respect","confidential","knock"], model:"Concrete daily practices plus dignity audits, staff training on respect, and confidentiality safeguards in records handling."}
+  ],
+  responsive:[
+    {q:"A person's needs change suddenly. How quickly does their care plan reflect that, and who is responsible?", keys:["review","update","48","responsib","communicat","risk"], model:"Name the trigger-based review process, target timescale (e.g. within 48–72 hours), the accountable role, and how changes reach the whole team."},
+    {q:"How do you handle complaints, and what changed in your service as a result of one?", keys:["complaint","respond","timescale","learn","chang","outcome"], model:"Show your complaints log with response timescales, outcomes, and at least one concrete service change driven by a complaint."}
+  ],
+  wellled:[
+    {q:"As Registered Manager, how do you know — today — that your service is safe and compliant?", keys:["dashboard","audit","data","kpi","assurance","oversight","governance"], model:"This is the question CareReady AI exists for: real-time readiness data, audit schedules, action tracking, and governance meetings where that data is reviewed and acted on."},
+    {q:"Show me how learning from incidents, audits and complaints changes practice in your organisation.", keys:["learn","action","capa","share","team meeting","chang","embed"], model:"Trace one item end-to-end: finding → CAPA action → team communication → practice change → follow-up audit confirming it stuck."}
+  ]
+};
+let mockState=null;
+
+PAGES.mock = () => {
+  return `<div class="page-head"><div><h1>Mock CQC Inspection</h1><p>AI-powered Q&A based on the CQC single assessment framework — with evidence mapping</p></div></div>
+  <div class="grid" style="grid-template-columns:1.5fr 1fr">
+    <div class="card">
+      <h3>✦ Inspection interview <span class="badge purple" id="mockKqBadge">Not started</span></h3>
+      <div class="chat" id="chat"></div>
+      <div class="chat-input" id="chatInput" style="display:none">
+        <textarea id="answerBox" placeholder="Answer as you would to a CQC inspector…"></textarea>
+        <button class="btn purple" onclick="submitAnswer()">Send</button>
+      </div>
+      <div id="mockStart" style="text-align:center;padding:26px 10px">
+        <p style="color:var(--slate);font-size:.9rem;margin-bottom:16px">Choose a key question area. The AI inspector will ask realistic CQC-style questions, assess your answers and point to the evidence you'd need on the day.</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          ${DATA.kq.map(k=>`<button class="btn sm ghost" onclick="startMock('${k.id}')">${k.name}</button>`).join('')}
+          <button class="btn sm purple" onclick="startMock('wellled')">Start with weakest — Well-led →</button>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><h3>How it works</h3>
+        <div class="rowlist" style="font-size:.85rem">
+          <div class="rw"><span class="grow">1 &nbsp; Pick a CQC key question area</span></div>
+          <div class="rw"><span class="grow">2 &nbsp; Answer inspector-style questions in your own words</span></div>
+          <div class="rw"><span class="grow">3 &nbsp; Get instant feedback and a model answer</span></div>
+          <div class="rw"><span class="grow">4 &nbsp; See which evidence items back up your answer</span></div>
+        </div></div>
+      <div class="card"><h3>Session score</h3>
+        <div id="mockScore" style="text-align:center;padding:8px"><p style="color:var(--muted);font-size:.85rem">Complete a session to see your interview readiness score.</p></div></div>
+      <div class="promo ai"><h4 style="color:var(--purple)">AI engine</h4>
+        <p>`+(DATA&&DATA.ai&&DATA.ai.engine==="llm"?"Live AI analysis is enabled — your answers are assessed by an LLM inspector against the CQC framework.":"Keyword assessment engine active. Set ANTHROPIC_API_KEY or Azure OpenAI credentials on the server to enable live AI analysis.")+`</p></div>
+    </div>
+  </div>`;
+};
+
+function startMock(kq){
+  mockState={kq, i:0, score:0, done:false};
+  document.getElementById('mockStart').style.display='none';
+  document.getElementById('chatInput').style.display='flex';
+  document.getElementById('mockKqBadge').textContent = DATA.kq.find(k=>k.id===kq).name + ' — in progress';
+  addMsg('ai', `Good morning. I'm your AI inspector for today's mock inspection of <b>${DATA.org}</b>, focusing on <b>${DATA.kq.find(k=>k.id===kq).name}</b>. Answer as you would on the day — I'll give feedback after each response. Let's begin.`);
+  setTimeout(()=>askNext(),500);
+}
+function addMsg(who,html){
+  const c=document.getElementById('chat');
+  c.insertAdjacentHTML('beforeend',`<div class="msg ${who}">${who==='ai'?'<div class="who">AI INSPECTOR</div>':''}${html}</div>`);
+  c.scrollTop=c.scrollHeight;
+}
+function askNext(){
+  const qs=MOCKQ[mockState.kq];
+  if(mockState.i>=qs.length){finishMock();return;}
+  addMsg('ai',`<b>Q${mockState.i+1} of ${qs.length}:</b> ${qs[mockState.i].q}`);
+}
+async function submitAnswer(){
+  if(!mockState||mockState.done) return;
+  const box=document.getElementById('answerBox'); const ans=box.value.trim();
+  if(!ans){toast('Type your answer first');return;}
+  addMsg('me',esc(ans)); box.value='';
+  addMsg('ai','<i>Assessing your answer…</i>');
+  try{
+    const r = await api('/api/mock/answer',{method:'POST',json:{kq:mockState.kq,index:mockState.i,answer:ans}});
+    const chat=document.getElementById('chat'); chat.lastElementChild.remove();
+    mockState.score += r.pct;
+    const cls = r.pct>=75?'green':r.pct>=40?'amber':'red';
+    addMsg('ai',`<span class="badge ${cls}">${r.verdict} · ${r.pct}%</span>`+
+      (r.engine==='llm'?' <span class="badge purple">AI analysis</span>':'')+
+      `<br><br>${r.engine==='llm'?('<b>Inspector feedback:</b> '+esc(r.feedback)+'<br><br>'):''}`+
+      `<b>What a strong answer covers:</b> ${r.model}<br><br><b>Evidence to have ready:</b> ${r.evidence}`);
+    mockState.i++; setTimeout(()=>askNext(),700);
+  }catch(e){ toast(e.message); }
+}
+function suggestEvidence(kq){
+  const map={safe:"Staff DBS Register · Safeguarding Policy v4.0 · Medication Administration SOP · Fire Risk Assessment",
+    effective:"Training Compliance Report — Aug · Staff Supervision Matrix · Induction records",
+    caring:"Service User Feedback Survey 2026 · Care plans (co-production evidence) · Dignity audit",
+    responsive:"Care Plan Audit — Q2 2026 · Complaints log · Review schedule",
+    wellled:"This dashboard (live readiness) · Business Continuity Plan · CAPA tracker · Governance meeting minutes"};
+  return map[kq];
+}
+function finishMock(){
+  mockState.done=true;
+  const qs=MOCKQ[mockState.kq]; const avg=Math.round(mockState.score/qs.length);
+  const kqn=DATA.kq.find(k=>k.id===mockState.kq).name;
+  document.getElementById('chatInput').style.display='none';
+  document.getElementById('mockKqBadge').textContent = kqn+' — complete';
+  addMsg('ai',`That concludes the <b>${kqn}</b> section. Your interview readiness score: <b>${avg}%</b>. ${avg>=75?'You would present confidently in this area — keep your evidence pack current.':avg>=40?'A reasonable foundation, but rehearse the model-answer structure and make sure the named evidence is uploaded and current.':'This area needs preparation before a real inspection — review the model answers and close the evidence gaps flagged on your dashboard.'}<br><br>Run another key question, or generate your inspection-ready evidence pack from the dashboard.`);
+  document.getElementById('mockScore').innerHTML = `<div class="donut" style="width:110px;height:110px;margin:0 auto">${donut(avg,110,11,avg>=75?'#16a34a':avg>=40?'#d97706':'#dc2626')}<div class="dv"><b style="font-size:1.4rem">${avg}%</b></div></div><p style="font-size:.82rem;color:var(--slate);margin-top:8px"><b>${kqn}</b> interview readiness</p><button class="btn sm ghost" style="margin-top:10px" onclick="go('mock');">Run another area</button>`;
+}
+
+
+async function uploadEvidence(inp){
+  const f = inp.files[0]; if(!f) return;
+  toast('Uploading '+f.name+'…');
+  const fd = new FormData(); fd.append('file', f);
+  try{
+    const r = await fetch(API+'/api/evidence/upload',{method:'POST',headers:{'Authorization':'Bearer '+TOKEN},body:fd});
+    if(!r.ok) throw new Error('Upload failed');
+    const d = await r.json();
+    toast('Classified as '+d.category+' → '+d.kq);
+    await refresh();
+  }catch(e){ toast(e.message); }
+  inp.value='';
+}
+/* ================= MODALS ================= */
+function locModal(name){
+  const l=DATA.locations.find(x=>x.name===name);
+  openModal(`<h3>${l.name}</h3>
+    <div class="donut-wrap"><div class="donut" style="width:110px;height:110px">${donut(l.score,110,11,barColor(l.score))}<div class="dv"><b style="font-size:1.4rem">${l.score}%</b></div></div>
+    <div style="flex:1"><p style="font-size:.87rem;color:var(--slate);line-height:1.6">${l.users} people supported · ${l.staff} staff · Status: <b>${l.st}</b></p>
+    <p style="font-size:.85rem;color:var(--slate);margin-top:8px">${l.score>=85?'This location is inspection-ready. Maintain evidence cadence and supervision schedule.':l.score>=75?'Close the flagged staff-compliance items to move this location to Ready.':'Priority location: DBS reviews, training gaps and an open medication incident are holding readiness down. A focused action plan is recommended this week.'}</p></div></div>
+    <div style="display:flex;gap:8px;margin-top:18px"><button class="btn sm" onclick="closeModal();setLocation('${l.name}');document.getElementById('locSelect').value='${l.name}'">Filter app to this location</button>
+    <button class="btn sm ghost" onclick="closeModal()">Close</button></div>`);
+}
+function personModal(id){
+  const p=DATA.people.find(x=>x.id===id);
+  openModal(`<h3>${p.name}</h3>
+    <div class="rowlist" style="font-size:.87rem">
+      <div class="rw"><span class="grow">Location</span><b>${p.loc}</b></div>
+      <div class="rw"><span class="grow">Care plan</span><b>${p.careplan}</b></div>
+      <div class="rw"><span class="grow">Risk assessment</span><b>${p.risk}</b></div>
+      <div class="rw"><span class="grow">Status</span>${stBadge(p.st==='green'?'Compliant':p.st==='amber'?'Due soon':'Overdue',p.st)}</div>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted);margin-top:12px">Full care records, reviews and daily notes are part of Phase 1. The POC tracks compliance status only.</p>
+    <div style="margin-top:14px"><button class="btn sm ghost" onclick="closeModal()">Close</button></div>`);
+}
+function evidencePack(){
+  openModal(`<h3>📄 Inspection-Ready Evidence Pack</h3>
+  <p style="font-size:.88rem;color:var(--slate);line-height:1.6;margin-bottom:14px">CareReady AI compiles your current evidence into a structured pack mapped to the five key questions — ready to hand to an inspector.</p>
+  <div class="rowlist" style="font-size:.86rem">
+    <div class="rw"><span class="sevdot" style="background:#16a34a"></span><span class="grow">421 current evidence items across 14 categories</span></div>
+    <div class="rw"><span class="sevdot" style="background:#16a34a"></span><span class="grow">Readiness summary per key question with trend</span></div>
+    <div class="rw"><span class="sevdot" style="background:#16a34a"></span><span class="grow">Staff compliance matrix (DBS, training, supervision)</span></div>
+    <div class="rw"><span class="sevdot" style="background:#d97706"></span><span class="grow">11 expired + 35 missing items listed with owners</span></div>
+    <div class="rw"><span class="sevdot" style="background:#16a34a"></span><span class="grow">Incident log with learning outcomes</span></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:18px">
+    <button class="btn sm" onclick="window.open(API+'/api/reports/evidence-pack?token='+TOKEN,'_blank');closeModal()">Generate pack (PDF)</button>
+    <button class="btn sm ghost" onclick="closeModal()">Cancel</button></div>`);
+}
+
+
+function actionModal(dbid, ref){
+  const a = DATA.actions.find(x=>x.dbid===dbid);
+  openModal(`<h3>${ref}</h3><p style="font-size:.9rem;margin-bottom:14px">${a.t}</p>
+  <p style="font-size:.8rem;color:var(--muted);margin-bottom:10px">Owner: <b>${a.owner}</b> · Due: <b>${a.due}</b> · Priority: <b>${a.pr}</b></p>
+  <p style="font-size:.85rem;font-weight:700;margin-bottom:8px">Update status</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">${['Not started','In progress','Scheduled','Done'].map(s=>
+    `<button class="btn sm ${s===a.st?'':'ghost'}" onclick="setActionStatus(${dbid},'${s}')">${s}</button>`).join('')}</div>`);
+}
+async function setActionStatus(dbid, status){
+  try{ await api('/api/actions/'+dbid+'/status',{method:'POST',json:{status}});
+    closeModal(); toast('Status updated — readiness recalculated'); await refresh();
+  }catch(e){ toast(e.message); }
+}
+async function markRead(id){ try{ await api('/api/alerts/'+id+'/read',{method:'POST'}); await refresh(); }catch(e){ toast(e.message);} }
+/* ================= ROUTER ================= */
+function go(page,sub){ location.hash = page + (sub?'/'+sub:''); }
+function render(hash){
+  const [page,sub]=(hash||'dashboard').split('/');
+  const fn=PAGES[page]||PAGES.dashboard;
+  document.getElementById('content').innerHTML=fn(sub);
+  document.querySelectorAll('.nav a').forEach(a=>a.classList.toggle('on',a.dataset.p===page || (page==='alerts'&&false)));
+  document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',()=>render(location.hash.replace('#','')));
+async function doLogin(){
+  const btn=document.querySelector('#login .btn.full'); btn.disabled=true; btn.textContent='Signing in…';
+  try{
+    const res = await api('/api/auth/login',{method:'POST',json:{
+      email:document.getElementById('lemail').value.trim(),
+      password:document.getElementById('lpass').value}});
+    TOKEN = res.token; sessionStorage.setItem('cr_token',TOKEN);
+    await loadData();
+    document.getElementById('login').classList.add('off');
+    document.getElementById('app').classList.add('on');
+    buildNav(); render('dashboard'); location.hash='dashboard';
+    toast('Welcome back, '+res.user.name.split(' ')[0]+' — live readiness computed');
+  }catch(e){ toast(e.message); }
+  btn.disabled=false; btn.textContent='Sign in to CareReady AI';
+}
+function logout(){
+  TOKEN=''; sessionStorage.removeItem('cr_token'); DATA=null;
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('login').classList.remove('off');
+  location.hash='';
+}
+async function refresh(){ await loadData(); render(location.hash.replace('#','')||'dashboard'); }
+window.addEventListener('load', async ()=>{
+  if(TOKEN){ try{ await loadData();
+    document.getElementById('login').classList.add('off');
+    document.getElementById('app').classList.add('on');
+    buildNav(); render(location.hash.replace('#','')||'dashboard');
+  }catch(e){} }
+});
+document.getElementById('lpass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>
